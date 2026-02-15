@@ -7,23 +7,21 @@ class EnrollmentServices:
 
     @staticmethod
     def enroll_student(data_in: EnrollmentCreate):
-       for enrollment in enrollment_db.values():
-           if enrollment.user_id == data_in.user_id:
-               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Student already enrolled")
-           
-           if enrollment.course_id == data_in.course_id:
-               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Student already enrolled")
+        for enrollment in enrollment_db.values():
+            if (enrollment.user_id == data_in.user_id and enrollment.course_id == data_in.course_id):
+                raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Student already enrolled"
+            )
+        enrollment_id = len(enrollment_db) + 1
 
-       
-       enrollment_id = len(enrollment_db) + 1
-
-       new_student_enroll = Enrollment(
+        new_enrollment = Enrollment(
            id = enrollment_id,
            user_id = data_in.user_id,
            course_id = data_in.course_id
        )
-       enrollment_db[enrollment_id] = new_student_enroll
-       return new_student_enroll
+        enrollment_db[enrollment_id] = new_enrollment
+        return new_enrollment
     
     @staticmethod
     def retrieve_student(id:int):
@@ -39,7 +37,6 @@ class EnrollmentServices:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
         
         del enrollment_db[enrollment_id]
-
 
     @staticmethod
     def retrieve_enrollments(user_id: Optional[int] = None, course_id: Optional[int] = None):
@@ -62,12 +59,11 @@ class EnrollmentServices:
 
     @staticmethod
     def student_deregister(user_id: int, course_id: int):
-        enrollment = enrollment_db.get(user_id, course_id) 
-        if not enrollment:
-            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail= "Enrollment not found")
-
-        enrollment_db[user_id].remove(course_id)
-        return {"message": "Deregistered successfully"}
+        for id, enrollment in enrollment_db.items():
+            if enrollment.user_id == user_id and enrollment.course_id == course_id:
+                del enrollment_db[id]
+                return
+        
 
         
     
