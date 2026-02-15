@@ -53,8 +53,7 @@ Course-Enrollment-Management-API/
 │   │   └── test_enrollment.py
 │   │
 │   └── conftest.py            
-│
-├── requirements.txt            
+│          
 ├── README.md                  
 └── .gitignore
 ```
