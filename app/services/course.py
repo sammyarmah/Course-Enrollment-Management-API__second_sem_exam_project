@@ -8,10 +8,12 @@ class CourseServices:
 
     @staticmethod
     def course_create(data_in: CourseCreate):
-        if not data_in.title:
+        if not data_in.title and not data_in.code:
             raise ValueError("Title is required")
-        if not data_in.code:
-            raise ValueError("Code is required")
+        
+        for course in course_db.values():
+            if course.code == data_in.code:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail= "Course already exists")
         
         course_id = len(course_db) + 1
 
